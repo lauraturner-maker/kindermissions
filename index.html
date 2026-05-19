@@ -3,275 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="widget-name" content="HQ Updates">
-    <meta name="widget-description" content="Portal with HQ campaign briefings and news">
-    <meta name="widget-tags" content="Communications">
     <title>HQ Updates</title>
     <style>
-        :root {
-            --primary: #65bee6;
-            --secondary: #f98e2b; /* Orange from the Missions screenshot */
-            --success: #10b981;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --bg: #ffffff;
-            --bg-gray: #f9fafb;
-            --border: #e5e7eb;
-        }
-
+        /* Hard-coded colors for Staffbase reliability */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-gray);
-            color: var(--text);
-            min-height: 100vh;
+            background-color: #f9fafb;
+            color: #1f2937;
+            padding: 10px;
         }
 
+        .cw-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Fixed Header */
         .cw-header {
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.25rem;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 15px;
         }
         .cw-wordmark {
             font-size: 1.1rem;
             font-weight: 800;
-            letter-spacing: 0.5px;
-            color: var(--primary);
+            color: #65bee6;
+        }
+        .cw-header-title {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        .cw-container {
-            max-width: 1100px;
-            margin: 1.5rem auto;
-            padding: 0 1rem;
-        }
-
+        /* Welcome Banner */
         .cw-welcome-banner {
-            background: var(--primary);
+            background-color: #65bee6;
             color: white;
-            padding: 1rem 1.25rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+        /* The Columns - using Flex for better Staffbase container support */
+        .dashboard-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-        @media (max-width: 768px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
+
+        .dashboard-col {
+            flex: 1;
+            min-width: 300px; /* Forces stack on mobile, side-by-side on desktop */
         }
 
         .cw-section-title {
-            color: var(--text);
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.05rem;
-            font-weight: 700;
-        }
-
-        .cw-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--secondary);
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        
-        /* Other News (Right Side) Styling */
-        .news-card { border-left-color: var(--primary); }
-
-        .card-header {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 0.5rem;
-        }
-        .card-date {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            background: var(--bg-gray);
-            padding: 0.2rem 0.55rem;
-            border-radius: 12px;
-        }
-        .cw-card h3 {
+            color: #1f2937;
+            border-bottom: 2px solid #65bee6;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
             font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .cw-card p.summary {
-            color: var(--text-light);
-            line-height: 1.4;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
         }
 
+        /* Card Styling */
+        .cw-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #f98e2b; /* Orange for Missions */
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .news-card {
+            border-left-color: #65bee6; /* Blue for News */
+        }
+
+        .cw-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .cw-card p {
+            color: #6b7280;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        /* Buttons */
         .cw-btn {
-            padding: 0.5rem 0.8rem;
+            display: inline-block;
+            padding: 8px 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.75rem;
             text-transform: uppercase;
             color: white;
+            text-decoration: none;
         }
-        .btn-mission { background: var(--secondary); }
-        .btn-news { background: #002b49; } /* Navy from the Details button */
+        .btn-mission { background-color: #f98e2b; }
+        .btn-news { background-color: #002b49; }
 
-        /* Modal */
-        .cw-modal-overlay {
+        /* Modal Overlay */
+        .modal-overlay {
             display: none;
             position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
             justify-content: center;
             align-items: center;
         }
-        .cw-modal-overlay.active { display: flex; }
-        .cw-modal {
-            background: var(--bg);
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 450px;
             width: 90%;
-            max-width: 500px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .cw-modal-header {
-            background: var(--primary);
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .cw-modal-body { padding: 1.5rem; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
-    <header class="cw-header">
+    <div class="cw-header">
         <div class="cw-wordmark">HQ Portal</div>
-        <div class="cw-header-title">Center Updates</div>
-    </header>
+        <div class="cw-header-title">Portal — HQ Updates</div>
+    </div>
 
     <div class="cw-container">
         <div class="cw-welcome-banner">
             <h2>Welcome</h2>
-            <span id="current-date"></span>
         </div>
 
-        <div class="dashboard-grid">
-            <div>
+        <div class="dashboard-row">
+            <div class="dashboard-col">
                 <h2 class="cw-section-title">Your Missions</h2>
-                <div id="missions-container"></div>
+                <div class="cw-card">
+                    <h3>Office: Enrollment</h3>
+                    <p>Enroll new families using Tuition Benefits and strategic promotions!</p>
+                    <button class="cw-btn btn-mission" onclick="openModal('Enrollment','Focus on Tuition Benefits and corporate lead follow-ups.')">Details</button>
+                </div>
+                <div class="cw-card">
+                    <h3>Classroom: SET Observations</h3>
+                    <p>Complete all required SET observations for Q2 training audits.</p>
+                    <button class="cw-btn btn-mission" onclick="openModal('SET Observations','Complete observations and upload results to the portal.')">Details</button>
+                </div>
             </div>
-            <div>
+
+            <div class="dashboard-col">
                 <h2 class="cw-section-title">Other News</h2>
-                <div id="news-container"></div>
+                <div class="cw-card news-card">
+                    <h3>Graduation Season</h3>
+                    <p>Celebration guidance and certificates are now available for download.</p>
+                    <button class="cw-btn btn-news" onclick="openModal('Graduation','Print certificates by May 21st for upcoming ceremonies.')">Details</button>
+                </div>
+                <div class="cw-card news-card">
+                    <h3>KCLC Summer Toolkit</h3>
+                    <p>The 2026 Summer Season Toolkit is live. Review Week 22 social plans.</p>
+                    <button class="cw-btn btn-news" onclick="openModal('Summer Toolkit','Review the four pillars and download event branding assets.')">Details</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="cw-modal-overlay" id="info-modal">
-        <div class="cw-modal">
-            <div class="cw-modal-header">
-                <h3 id="modal-title"></h3>
-                <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
-            </div>
-            <div class="cw-modal-body">
-                <div id="modal-content"></div>
-                <div style="margin-top:1.5rem; padding:1rem; background:var(--bg-gray); border-left:4px solid var(--primary);">
-                    <strong>Action Required:</strong>
-                    <p id="modal-action" style="margin-top:0.5rem;"></p>
-                </div>
-            </div>
+    <div class="modal-overlay" id="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 id="m-title" style="margin-bottom:10px;"></h3>
+            <p id="m-body" style="color:#6b7280; font-size:0.9rem; margin-bottom:20px;"></p>
+            <button class="cw-btn btn-news" onclick="closeModal()">Close</button>
         </div>
     </div>
 
     <script>
-        const hqUpdates = {
-            missions: [
-                {
-                    id: 'm1',
-                    title: 'Office: Tuition Benefits',
-                    summary: 'Enroll new families using Tuition Benefits and strategic promotions!',
-                    details: 'Focus on local corporate partnerships to drive enrollment using the new benefit tier guides.',
-                    action: 'Review the current enrollment pipeline and apply active promo codes.'
-                },
-                {
-                    id: 'm2',
-                    title: 'Classroom: SET Observations',
-                    summary: 'Complete SET observations for all lead teachers by end of week.',
-                    details: 'Ensure all observation forms are uploaded to the portal for regional review.',
-                    action: 'Schedule 30-minute observation blocks for Tuesday and Wednesday.'
-                }
-            ],
-            news: [
-                {
-                    id: 'n1',
-                    title: 'Graduation Season',
-                    summary: "It's graduation season! Celebrate children as they graduate into the next class. Get certificates and planning guidance.",
-                    details: 'HQ has authorized a set budget per classroom for celebrations.',
-                    action: 'Print certificates before Thursday, May 21.'
-                },
-                {
-                    id: 'n2',
-                    title: 'KCLC 2026 Summer Toolkit',
-                    summary: 'Simplified view of the season. Use for Weeks 22-35, but read now for School-Age Summer Social in Week 22.',
-                    details: 'The toolkit includes branding assets, supply lists, and social media templates.',
-                    action: 'Download and review the Week 22 social event checklist.'
-                }
-            ]
-        };
-
-        function render() {
-            document.getElementById('missions-container').innerHTML = hqUpdates.missions.map(m => `
-                <div class="cw-card">
-                    <h3>${m.title}</h3>
-                    <p class="summary">${m.summary}</p>
-                    <button class="cw-btn btn-mission" onclick="openModal('missions', '${m.id}')">Details</button>
-                </div>
-            `).join('');
-
-            document.getElementById('news-container').innerHTML = hqUpdates.news.map(n => `
-                <div class="cw-card news-card">
-                    <h3>${n.title}</h3>
-                    <p class="summary">${n.summary}</p>
-                    <button class="cw-btn btn-news" onclick="openModal('news', '${n.id}')">Details</button>
-                </div>
-            `).join('');
-            
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        function openModal(title, body) {
+            document.getElementById('m-title').innerText = title;
+            document.getElementById('m-body').innerText = body;
+            document.getElementById('modal').classList.add('active');
         }
-
-        function openModal(type, id) {
-            const data = hqUpdates[type].find(x => x.id === id);
-            document.getElementById('modal-title').textContent = data.title;
-            document.getElementById('modal-content').innerHTML = `<p>${data.details}</p>`;
-            document.getElementById('modal-action').textContent = data.action;
-            document.getElementById('info-modal').classList.add('active');
-        }
-
         function closeModal() {
-            document.getElementById('info-modal').classList.remove('active');
+            document.getElementById('modal').classList.remove('active');
         }
-
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('info-modal')) closeModal();
-        }
-
-        render();
     </script>
 </body>
 </html>
