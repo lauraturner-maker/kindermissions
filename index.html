@@ -3,198 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HQ Updates</title>
+    <meta name="widget-name" content="KinderCare Director Dashboard">
+    <meta name="widget-description" content="Center Director portal for mission tracking and HQ news">
+    <meta name="widget-tags" content="Education, Management">
+    <title>KinderCare Director Portal</title>
     <style>
-        /* Hard-coded colors for Staffbase reliability */
+        :root {
+            --primary: #da291c; /* KinderCare Red */
+            --secondary: #00a3e0; /* KinderCare Blue */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-gray: #f9fafb;
+            --border: #e5e7eb;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #ff4d4d;
+                --secondary: #3b9eff;
+                --success: #34d399;
+                --warning: #fbbf24;
+                --danger: #f87171;
+                --text: #f3f4f6;
+                --text-light: #9ca3af;
+                --bg: #1f2937;
+                --bg-gray: #111827;
+                --border: #374151;
+            }
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f9fafb;
-            color: #1f2937;
-            padding: 10px;
+            background: var(--bg-gray);
+            color: var(--text);
+            min-height: 100vh;
         }
 
-        .cw-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        /* Fixed Header */
         .cw-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 12px 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 0.75rem;
         }
         .cw-wordmark {
             font-size: 1.1rem;
             font-weight: 800;
-            color: #65bee6;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            text-transform: uppercase;
         }
         .cw-header-title {
-            color: #6b7280;
+            color: var(--text-light);
             font-size: 0.85rem;
             font-weight: 600;
         }
 
-        /* Welcome Banner */
+        .cw-container {
+            max-width: 1100px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
         .cw-welcome-banner {
-            background-color: #65bee6;
+            background: var(--primary);
             color: white;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        /* The Columns - using Flex for better Staffbase container support */
-        .dashboard-row {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .cw-welcome-banner h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .cw-welcome-banner span {
+            font-size: 0.85rem;
+            opacity: 0.95;
         }
 
-        .dashboard-col {
-            flex: 1;
-            min-width: 300px; /* Forces stack on mobile, side-by-side on desktop */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
 
         .cw-section-title {
-            color: #1f2937;
-            border-bottom: 2px solid #65bee6;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            color: var(--text);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .cw-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--secondary);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .cw-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .cw-card.mission-card { border-left-color: var(--warning); }
+
+        .card-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 0.5rem;
+        }
+        .card-date {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            background: var(--bg-gray);
+            padding: 0.2rem 0.55rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .cw-card h3 {
             font-size: 1rem;
             font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .cw-card p.summary {
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 0.9rem;
+            font-size: 0.9rem;
         }
 
-        /* Card Styling */
-        .cw-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-left: 4px solid #f98e2b; /* Orange for Missions */
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .news-card {
-            border-left-color: #65bee6; /* Blue for News */
-        }
-
-        .cw-card h3 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .cw-card p {
-            color: #6b7280;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin-bottom: 12px;
-        }
-
-        /* Buttons */
         .cw-btn {
-            display: inline-block;
-            padding: 8px 16px;
+            padding: 0.55rem 1rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            color: white;
-            text-decoration: none;
+            letter-spacing: 0.4px;
+            font-family: inherit;
+            transition: opacity 0.15s;
         }
-        .btn-mission { background-color: #f98e2b; }
-        .btn-news { background-color: #002b49; }
+        .cw-btn:hover { opacity: 0.9; }
+        .cw-btn-primary { background: var(--secondary); color: white; }
+        .cw-btn-warning { background: var(--warning); color: white; }
 
-        /* Modal Overlay */
-        .modal-overlay {
+        .cw-modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
+            padding: 1rem;
         }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background: white;
-            padding: 24px;
+        .cw-modal-overlay.active { display: flex; }
+
+        .cw-modal {
+            background: var(--bg);
+            color: var(--text);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cw-modal-header {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .cw-modal-header.warning-modal { background: var(--warning); }
+        .cw-modal-header h3 { font-size: 1.05rem; font-weight: 700; }
+
+        .cw-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 0.25rem;
+        }
+
+        .cw-modal-body {
+            padding: 1.25rem 1.5rem;
+            line-height: 1.55;
+            overflow-y: auto;
+            font-size: 0.92rem;
+        }
+        .cw-modal-body ul {
+            margin-top: 0.75rem;
+            margin-left: 1.25rem;
+        }
+        .cw-modal-body li { margin-bottom: 0.5rem; }
+        .cw-modal-body strong { color: var(--text); }
+        .cw-modal-body p { color: var(--text-light); }
+
+        .cw-action-items {
+            margin-top: 1rem;
+            background: var(--bg-gray);
+            padding: 0.85rem 1rem;
             border-radius: 8px;
-            max-width: 450px;
-            width: 90%;
+            border-left: 4px solid var(--warning);
+            font-size: 0.9rem;
+        }
+        .cw-action-items strong {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--text);
         }
     </style>
 </head>
 <body>
 
-    <div class="cw-header">
-        <div class="cw-wordmark">HQ Portal</div>
-        <div class="cw-header-title">Portal — HQ Updates</div>
-    </div>
+    <header class="cw-header">
+        <div class="cw-wordmark">KinderCare</div>
+        <div class="cw-header-title" data-i18n="headerTitle">Center Director Portal — Week 19</div>
+    </header>
 
     <div class="cw-container">
         <div class="cw-welcome-banner">
-            <h2>Welcome</h2>
+            <h2 data-i18n="welcome">Welcome, Center Director</h2>
+            <span id="current-date"></span>
         </div>
 
-        <div class="dashboard-row">
-            <div class="dashboard-col">
-                <h2 class="cw-section-title">Your Missions</h2>
-                <div class="cw-card">
-                    <h3>Office: Enrollment</h3>
-                    <p>Enroll new families using Tuition Benefits and strategic promotions!</p>
-                    <button class="cw-btn btn-mission" onclick="openModal('Enrollment','Focus on Tuition Benefits and corporate lead follow-ups.')">Details</button>
-                </div>
-                <div class="cw-card">
-                    <h3>Classroom: SET Observations</h3>
-                    <p>Complete all required SET observations for Q2 training audits.</p>
-                    <button class="cw-btn btn-mission" onclick="openModal('SET Observations','Complete observations and upload results to the portal.')">Details</button>
-                </div>
+        <div class="dashboard-grid">
+            <div>
+                <h2 class="cw-section-title" data-i18n="sectionNews">Center News & Updates</h2>
+                <div id="campaigns-container"></div>
             </div>
-
-            <div class="dashboard-col">
-                <h2 class="cw-section-title">Other News</h2>
-                <div class="cw-card news-card">
-                    <h3>Graduation Season</h3>
-                    <p>Celebration guidance and certificates are now available for download.</p>
-                    <button class="cw-btn btn-news" onclick="openModal('Graduation','Print certificates by May 21st for upcoming ceremonies.')">Details</button>
-                </div>
-                <div class="cw-card news-card">
-                    <h3>KCLC Summer Toolkit</h3>
-                    <p>The 2026 Summer Season Toolkit is live. Review Week 22 social plans.</p>
-                    <button class="cw-btn btn-news" onclick="openModal('Summer Toolkit','Review the four pillars and download event branding assets.')">Details</button>
-                </div>
+            <div>
+                <h2 class="cw-section-title" data-i18n="sectionMissions">Missions This Week</h2>
+                <div id="pricing-container"></div>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="m-title" style="margin-bottom:10px;"></h3>
-            <p id="m-body" style="color:#6b7280; font-size:0.9rem; margin-bottom:20px;"></p>
-            <button class="cw-btn btn-news" onclick="closeModal()">Close</button>
+    <div class="cw-modal-overlay" id="info-modal">
+        <div class="cw-modal">
+            <div class="cw-modal-header" id="modal-header">
+                <h3 id="modal-title">Update Title</h3>
+                <button class="cw-close-btn" id="modal-close">&times;</button>
+            </div>
+            <div class="cw-modal-body">
+                <div id="modal-content"></div>
+                <div class="cw-action-items">
+                    <strong data-i18n="actionRequired">Director Action Required:</strong>
+                    <p id="modal-action"></p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        function openModal(title, body) {
-            document.getElementById('m-title').innerText = title;
-            document.getElementById('m-body').innerText = body;
-            document.getElementById('modal').classList.add('active');
+        // — Language detection —
+        const LANG = 'en-US'; 
+        document.documentElement.lang = LANG;
+        const LOCALE = 'en-US';
+
+        const longDateFormatter = new Intl.DateTimeFormat(LOCALE, {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+        const shortDateFormatter = new Intl.DateTimeFormat(LOCALE, {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        const T = {
+            'en-US': {
+                headerTitle: 'Center Director Portal — Week 19 Updates',
+                welcome: 'Welcome, Center Director',
+                sectionNews: 'Other News & Resources',
+                sectionMissions: 'Your Missions This Week',
+                viewBriefing: 'Read Guidance',
+                viewPricing: 'View Mission Details',
+                actionRequired: 'Director Action Required:'
+            }
+        };
+        const t = T['en-US'];
+
+        function getRelativeDate(daysOffset) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            return shortDateFormatter.format(d);
         }
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
+
+        // — Data tailored to KinderCare screenshots —
+        const hqUpdates = {
+            campaigns: [
+                {
+                    id: 'n1',
+                    dateOffset: 0,
+                    title: 'Graduation Season Planning',
+                    summary: 'Celebrate children as they graduate to the next class! Access your planning guidance and certificates now.',
+                    details: `
+                        <p>It's time to celebrate our learners! Ensure your center is prepared for upcoming ceremonies.</p>
+                        <ul>
+                            <li><strong>Certificates:</strong> Download official Graduation Certificates via the KCLC link.</li>
+                            <li><strong>Planning:</strong> Review the guidance document to coordinate dates with families.</li>
+                            <li><strong>Environment:</strong> Begin decorating classroom transition areas.</li>
+                        </ul>
+                    `,
+                    action: 'Download certificates and set your ceremony dates in the family calendar.'
+                },
+                {
+                    id: 'n2',
+                    dateOffset: -1,
+                    title: '2026 Summer Season Toolkit',
+                    summary: 'The Toolkit supports all four pillars. Review Weeks 22–35 now to prepare for Summer Social events.',
+                    details: `
+                        <p>Get a simplified view of the season so you can focus on the right work at the right time.</p>
+                        <ul>
+                            <li><strong>Week 22:</strong> Hosting your first School-Age Summer Social.</li>
+                            <li><strong>Pillars:</strong> Ensure your curriculum align with the four pillars defined in the toolkit.</li>
+                        </ul>
+                    `,
+                    action: 'Read through the toolkit and brief your School-Age teachers on the Week 22 Social.'
+                },
+                {
+                    id: 'n3',
+                    dateOffset: -2,
+                    title: 'Updated Code of Ethics',
+                    summary: 'Full refresh designed to strengthen clarity, compliance, and culture.',
+                    details: `
+                        <p>The updated Code of Ethics is now available for all staff members.</p>
+                        <ul>
+                            <li><strong>Compliance:</strong> Ensure all new hires are briefed on the updated standards.</li>
+                            <li><strong>Culture:</strong> Use this as an opportunity to reinforce center values during staff meetings.</li>
+                        </ul>
+                    `,
+                    action: 'Print the updated Code of Ethics and place it in the staff breakroom binder.'
+                }
+            ],
+            pricing: [
+                {
+                    id: 'm1',
+                    dateOffset: 0,
+                    title: 'Enroll New Families',
+                    summary: 'OFFICE: Focus on Tuition Benefits and strategic promotions to fill remaining spots.',
+                    details: `
+                        <p>Maximize center enrollment by leveraging current corporate tuition benefit partnerships.</p>
+                        <ul>
+                            <li><strong>Promotions:</strong> Review active regional discounts.</li>
+                            <li><strong>Follow-up:</strong> Call back any "warm" leads from last week's tours.</li>
+                        </ul>
+                    `,
+                    action: 'Identify 5 prospective families and send personalized follow-up emails regarding tuition benefits.'
+                },
+                {
+                    id: 'm2',
+                    dateOffset: 0,
+                    title: 'Complete SET Observations',
+                    summary: 'CLASSROOM: Ensure all required SET observations are documented for the current period.',
+                    details: `
+                        <p>Standardized Education Tool (SET) observations are critical for maintaining curriculum quality.</p>
+                        <ul>
+                            <li>Observe lead teachers during core instructional blocks.</li>
+                            <li>Provide immediate verbal feedback followed by digital documentation.</li>
+                        </ul>
+                    `,
+                    action: 'Schedule and complete at least 2 classroom observations by Friday afternoon.'
+                },
+                {
+                    id: 'm3',
+                    dateOffset: -1,
+                    title: 'Q2 Training Completion',
+                    summary: 'CLASSROOM: Help outstanding teachers complete their required Q2 training modules.',
+                    details: `
+                        <p>Ensure 100% compliance for quarterly training across all age groups.</p>
+                        <ul>
+                            <li>Review the outstanding training report in the portal.</li>
+                            <li>Arrange "off-floor" time for teachers to finish modules if necessary.</li>
+                        </ul>
+                    `,
+                    action: 'Post a list of outstanding modules in the office and assign completion deadlines to relevant staff.'
+                }
+            ]
+        };
+
+        // — Rendering —
+        function renderCards() {
+            const campaignsContainer = document.getElementById('campaigns-container');
+            const pricingContainer   = document.getElementById('pricing-container');
+
+            campaignsContainer.innerHTML = hqUpdates.campaigns.map(item => `
+                <div class="cw-card">
+                    <div class="card-header">
+                        <span class="card-date">${getRelativeDate(item.dateOffset)}</span>
+                    </div>
+                    <h3>${item.title}</h3>
+                    <p class="summary">${item.summary}</p>
+                    <button class="cw-btn cw-btn-primary" data-cat="campaigns" data-id="${item.id}">${t.viewBriefing}</button>
+                </div>
+            `).join('');
+
+            pricingContainer.innerHTML = hqUpdates.pricing.map(item => `
+                <div class="cw-card mission-card">
+                    <div class="card-header">
+                        <span class="card-date">DUE SOON</span>
+                    </div>
+                    <h3>${item.title}</h3>
+                    <p class="summary">${item.summary}</p>
+                    <button class="cw-btn cw-btn-warning" data-cat="pricing" data-id="${item.id}">${t.viewPricing}</button>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('[data-cat]').forEach(btn => {
+                btn.addEventListener('click', () => openModal(btn.dataset.cat, btn.dataset.id));
+            });
         }
-    </script>
-</body>
-</html>
+
+        const modalOverlay = document.getElementById('info-modal');
+        const modalHeader  = document.getElementById('modal-header');
+        const modalTitle   = document.getElementById('modal-title');
+        const modalContent = document
