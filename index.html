@@ -4,24 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="widget-name" content="HQ Updates">
-    <meta name="widget-description" content="Portal with HQ campaign briefings and pricing updates">
+    <meta name="widget-description" content="Portal with HQ campaign briefings and news">
     <meta name="widget-tags" content="Communications">
     <title>HQ Updates</title>
     <style>
         :root {
-            /* Updated accent color to #65bee6 */
             --primary: #65bee6;
+            --secondary: #f98e2b; /* Orange from the Missions screenshot */
             --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
             --text: #1f2937;
             --text-light: #6b7280;
             --bg: #ffffff;
             --bg-gray: #f9fafb;
             --border: #e5e7eb;
         }
-
-        /* Dark mode styles removed to keep it light-only */
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -39,19 +35,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 0.75rem;
         }
         .cw-wordmark {
             font-size: 1.1rem;
             font-weight: 800;
             letter-spacing: 0.5px;
             color: var(--primary);
-        }
-        .cw-header-title {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            font-weight: 600;
         }
 
         .cw-container {
@@ -69,16 +58,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .cw-welcome-banner h2 {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-        .cw-welcome-banner span {
-            font-size: 0.85rem;
-            opacity: 0.95;
         }
 
         .dashboard-grid {
@@ -102,19 +81,15 @@
         .cw-card {
             background: var(--bg);
             border: 1px solid var(--border);
-            border-left: 4px solid var(--primary);
+            border-left: 4px solid var(--secondary);
             border-radius: 10px;
-            padding: 1rem 1.1rem;
+            padding: 1rem;
             margin-bottom: 1rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: transform 0.15s, box-shadow 0.15s;
         }
-        .cw-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-        }
-        /* Pricing card uses primary accent instead of yellow */
-        .cw-card.pricing-card { border-left-color: var(--primary); }
+        
+        /* Other News (Right Side) Styling */
+        .news-card { border-left-color: var(--primary); }
 
         .card-header {
             display: flex;
@@ -122,42 +97,38 @@
             margin-bottom: 0.5rem;
         }
         .card-date {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--text-light);
             background: var(--bg-gray);
             padding: 0.2rem 0.55rem;
             border-radius: 12px;
-            font-weight: 500;
         }
         .cw-card h3 {
             font-size: 1rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            color: var(--text);
         }
         .cw-card p.summary {
             color: var(--text-light);
-            line-height: 1.5;
-            margin-bottom: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
             font-size: 0.9rem;
         }
 
         .cw-btn {
-            padding: 0.55rem 1rem;
+            padding: 0.5rem 0.8rem;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.4px;
-            font-family: inherit;
-            transition: opacity 0.15s;
+            color: white;
         }
-        .cw-btn:hover { opacity: 0.9; }
-        .cw-btn-primary { background: var(--primary); color: white; }
-        .cw-btn-warning { background: var(--primary); color: white; }
+        .btn-mission { background: var(--secondary); }
+        .btn-news { background: #002b49; } /* Navy from the Details button */
 
+        /* Modal */
         .cw-modal-overlay {
             display: none;
             position: fixed;
@@ -166,267 +137,141 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
         }
         .cw-modal-overlay.active { display: flex; }
-
         .cw-modal {
             background: var(--bg);
-            color: var(--text);
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
+            width: 90%;
+            max-width: 500px;
             border-radius: 10px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            animation: modalIn 0.2s ease;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        @keyframes modalIn {
-            from { opacity: 0; transform: translateY(-12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .cw-modal-header {
             background: var(--primary);
             color: white;
-            padding: 1rem 1.25rem;
+            padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0;
         }
-        .cw-modal-header h3 { font-size: 1.05rem; font-weight: 700; }
-
-        .cw-close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            line-height: 1;
-            cursor: pointer;
-            padding: 0 0.25rem;
-        }
-
-        .cw-modal-body {
-            padding: 1.25rem 1.5rem;
-            line-height: 1.55;
-            overflow-y: auto;
-            font-size: 0.92rem;
-        }
-        .cw-modal-body ul {
-            margin-top: 0.75rem;
-            margin-left: 1.25rem;
-        }
-        .cw-modal-body li { margin-bottom: 0.5rem; }
-        .cw-modal-body strong { color: var(--text); }
-        .cw-modal-body p { color: var(--text-light); }
-
-        .cw-action-items {
-            margin-top: 1rem;
-            background: var(--bg-gray);
-            padding: 0.85rem 1rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            font-size: 0.9rem;
-        }
-        .cw-action-items strong {
-            display: block;
-            margin-bottom: 0.3rem;
-            color: var(--text);
-        }
+        .cw-modal-body { padding: 1.5rem; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
     <header class="cw-header">
         <div class="cw-wordmark">HQ Portal</div>
-        <div class="cw-header-title" data-i18n="headerTitle">Portal — HQ Updates</div>
+        <div class="cw-header-title">Center Updates</div>
     </header>
 
     <div class="cw-container">
         <div class="cw-welcome-banner">
-            <h2 data-i18n="welcome">Welcome</h2>
+            <h2>Welcome</h2>
             <span id="current-date"></span>
         </div>
 
         <div class="dashboard-grid">
             <div>
-                <h2 class="cw-section-title" data-i18n="sectionCampaigns">Your Missions</h2>
-                <div id="campaigns-container"></div>
+                <h2 class="cw-section-title">Your Missions</h2>
+                <div id="missions-container"></div>
             </div>
             <div>
-                <h2 class="cw-section-title" data-i18n="sectionPricing">Need to Know</h2>
-                <div id="pricing-container"></div>
+                <h2 class="cw-section-title">Other News</h2>
+                <div id="news-container"></div>
             </div>
         </div>
     </div>
 
     <div class="cw-modal-overlay" id="info-modal">
         <div class="cw-modal">
-            <div class="cw-modal-header" id="modal-header">
-                <h3 id="modal-title">Update Title</h3>
-                <button class="cw-close-btn" id="modal-close">&times;</button>
+            <div class="cw-modal-header">
+                <h3 id="modal-title"></h3>
+                <button onclick="closeModal()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
             <div class="cw-modal-body">
                 <div id="modal-content"></div>
-                <div class="cw-action-items">
-                    <strong data-i18n="actionRequired">Action Required:</strong>
-                    <p id="modal-action"></p>
+                <div style="margin-top:1.5rem; padding:1rem; background:var(--bg-gray); border-left:4px solid var(--primary);">
+                    <strong>Action Required:</strong>
+                    <p id="modal-action" style="margin-top:0.5rem;"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const LANG = (() => {
-            const l = navigator.language || '';
-            return l.startsWith('en-GB') ? 'en-GB' : 'en-US';
-        })();
-        document.documentElement.lang = LANG;
-
-        const LOCALE = LANG === 'en-GB' ? 'en-GB' : 'en-US';
-        const CURRENCY = LANG === 'en-GB' ? 'GBP' : 'USD';
-
-        const longDateFormatter = new Intl.DateTimeFormat(LOCALE, {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-        });
-        const shortDateFormatter = new Intl.DateTimeFormat(LOCALE, {
-            year: 'numeric', month: 'short', day: 'numeric'
-        });
-        const currencyFormatter = new Intl.NumberFormat(LOCALE, {
-            style: 'currency', currency: CURRENCY
-        });
-
-        // — Updated Translations —
-        const T = {
-            'en-GB': {
-                headerTitle: 'Portal — HQ Updates',
-                welcome: 'Welcome',
-                sectionCampaigns: 'Your Missions',
-                sectionPricing: 'Need to Know',
-                viewBriefing: 'View Briefing',
-                viewPricing: 'View Details',
-                actionRequired: 'Action Required:'
-            },
-            'en-US': {
-                headerTitle: 'Portal — HQ Updates',
-                welcome: 'Welcome',
-                sectionCampaigns: 'Your Missions',
-                sectionPricing: 'Need to Know',
-                viewBriefing: 'View Briefing',
-                viewPricing: 'View Details',
-                actionRequired: 'Action Required:'
-            }
-        };
-        const t = T[LANG] ?? T['en-US'];
-
-        function getRelativeDate(daysOffset) {
-            const d = new Date();
-            d.setDate(d.getDate() + daysOffset);
-            return shortDateFormatter.format(d);
-        }
-
         const hqUpdates = {
-            campaigns: [
+            missions: [
                 {
-                    id: 'c1',
-                    dateOffset: 0,
-                    title: 'Summer BBQ Bonanza',
-                    summary: 'Our new BBQ campaign launches next week. Focus on fresh meats, buns, and charcoal displays at the store front.',
-                    details: `<p>The <strong>Summer BBQ Bonanza</strong> is our biggest Q2 push.</p><ul><li><strong>Gondola ends:</strong> Dedicate at least two front gondola ends to BBQ essentials.</li><li><strong>Fresh meat:</strong> Ensure sections are fully stocked by 10:00 daily.</li></ul>`,
-                    action: 'Install new POS materials by Sunday evening.'
+                    id: 'm1',
+                    title: 'Office: Tuition Benefits',
+                    summary: 'Enroll new families using Tuition Benefits and strategic promotions!',
+                    details: 'Focus on local corporate partnerships to drive enrollment using the new benefit tier guides.',
+                    action: 'Review the current enrollment pipeline and apply active promo codes.'
                 },
                 {
-                    id: 'c2',
-                    dateOffset: -3,
-                    title: 'Classroom: Complete SET Observations',
-                    summary: 'Highlighting our commitment to local farmers. New branding rollout for regional fresh produce.',
-                    details: `<p>The <strong>Local Heroes</strong> campaign highlights products sourced within an 80km radius.</p><ul><li>Green crates replace standard black crates.</li><li>Feature local supplier spotlight cards.</li></ul>`,
-                    action: 'Audit current fresh produce stock.'
+                    id: 'm2',
+                    title: 'Classroom: SET Observations',
+                    summary: 'Complete SET observations for all lead teachers by end of week.',
+                    details: 'Ensure all observation forms are uploaded to the portal for regional review.',
+                    action: 'Schedule 30-minute observation blocks for Tuesday and Wednesday.'
                 }
             ],
-            pricing: [
+            news: [
                 {
-                    id: 'p1',
-                    dateOffset: -1,
+                    id: 'n1',
                     title: 'Graduation Season',
-                    summary: 'It's graduation season, and we're excited to celebrate children as they graduate from one class into the next! Get your Graduation Certificates and planning guidance here. ',
-                    details: `<p>HQ has authorised a set budget per classroom for the party. </p><ul><li><strong>Semi-skimmed 1L:</strong> from {oldA} to {newA}</li><li><strong>Whole milk 2L:</strong> from {oldB} to {newB}</li></ul>`,
-                    pricing: { oldA: 1.30, newA: 1.20, oldB: 1.75, newB: 1.65 },
-                    action: 'Print out all copies required before Thursday May 21.'
-                }           {
-                    id: 'p2',
-                    dateOffset: -5,
-                    title: 'KCLC 2026 Summer Season Toolkit',
-                    summary: 'The Summer Season Toolkit supports all four pillars and provides you with a simplified view of the season so you can focus on the right work at the right time. The toolkit should be used from weeks 22-235, but read through it now to see what's coming soon, like hosting your first School-Age Summer Social event in week 22!" ',
-                    details: `<p>HQ has authorised a set budget per classroom for the party. </p><ul><li><strong>Semi-skimmed 1L:</strong> from {oldA} to {newA}</li><li><strong>Whole milk 2L:</strong> from {oldB} to {newB}</li></ul>`,
-                    pricing: { oldA: 1.30, newA: 1.20, oldB: 1.75, newB: 1.65 },
-                    action: 'Print out all copies required before Thursday May 21.'
+                    summary: "It's graduation season! Celebrate children as they graduate into the next class. Get certificates and planning guidance.",
+                    details: 'HQ has authorized a set budget per classroom for celebrations.',
+                    action: 'Print certificates before Thursday, May 21.'
+                },
+                {
+                    id: 'n2',
+                    title: 'KCLC 2026 Summer Toolkit',
+                    summary: 'Simplified view of the season. Use for Weeks 22-35, but read now for School-Age Summer Social in Week 22.',
+                    details: 'The toolkit includes branding assets, supply lists, and social media templates.',
+                    action: 'Download and review the Week 22 social event checklist.'
                 }
             ]
         };
 
-        function fillPricingTokens(text, item) {
-            if (!item.pricing) return text;
-            const p = item.pricing;
-            return text
-                .replaceAll('{oldA}', currencyFormatter.format(p.oldA || 0))
-                .replaceAll('{newA}', currencyFormatter.format(p.newA || 0))
-                .replaceAll('{oldB}', currencyFormatter.format(p.oldB || 0))
-                .replaceAll('{newB}', currencyFormatter.format(p.newB || 0));
-        }
-
-        function renderCards() {
-            document.getElementById('campaigns-container').innerHTML = hqUpdates.campaigns.map(item => `
+        function render() {
+            document.getElementById('missions-container').innerHTML = hqUpdates.missions.map(m => `
                 <div class="cw-card">
-                    <div class="card-header"><span class="card-date">${getRelativeDate(item.dateOffset)}</span></div>
-                    <h3>${item.title}</h3>
-                    <p class="summary">${item.summary}</p>
-                    <button class="cw-btn cw-btn-primary" data-cat="campaigns" data-id="${item.id}">${t.viewBriefing}</button>
+                    <h3>${m.title}</h3>
+                    <p class="summary">${m.summary}</p>
+                    <button class="cw-btn btn-mission" onclick="openModal('missions', '${m.id}')">Details</button>
                 </div>
             `).join('');
 
-            document.getElementById('pricing-container').innerHTML = hqUpdates.pricing.map(item => `
-                <div class="cw-card pricing-card">
-                    <div class="card-header"><span class="card-date">${getRelativeDate(item.dateOffset)}</span></div>
-                    <h3>${item.title}</h3>
-                    <p class="summary">${fillPricingTokens(item.summary, item)}</p>
-                    <button class="cw-btn cw-btn-warning" data-cat="pricing" data-id="${item.id}">${t.viewPricing}</button>
+            document.getElementById('news-container').innerHTML = hqUpdates.news.map(n => `
+                <div class="cw-card news-card">
+                    <h3>${n.title}</h3>
+                    <p class="summary">${n.summary}</p>
+                    <button class="cw-btn btn-news" onclick="openModal('news', '${n.id}')">Details</button>
                 </div>
             `).join('');
-
-            document.querySelectorAll('[data-cat]').forEach(btn => {
-                btn.addEventListener('click', () => openModal(btn.dataset.cat, btn.dataset.id));
-            });
+            
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         }
 
-        const modalOverlay = document.getElementById('info-modal');
-        const modalTitle   = document.getElementById('modal-title');
-        const modalContent = document.getElementById('modal-content');
-        const modalAction  = document.getElementById('modal-action');
-
-        function openModal(category, id) {
-            const data = hqUpdates[category].find(item => item.id === id);
-            if (!data) return;
-            modalTitle.textContent = data.title;
-            modalContent.innerHTML = fillPricingTokens(data.details, data);
-            modalAction.textContent = data.action;
-            modalOverlay.classList.add('active');
+        function openModal(type, id) {
+            const data = hqUpdates[type].find(x => x.id === id);
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-content').innerHTML = `<p>${data.details}</p>`;
+            document.getElementById('modal-action').textContent = data.action;
+            document.getElementById('info-modal').classList.add('active');
         }
 
-        function closeModal() { modalOverlay.classList.remove('active'); }
+        function closeModal() {
+            document.getElementById('info-modal').classList.remove('active');
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                el.textContent = t[el.dataset.i18n];
-            });
-            document.getElementById('current-date').textContent = longDateFormatter.format(new Date());
-            renderCards();
-            document.getElementById('modal-close').addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-        });
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('info-modal')) closeModal();
+        }
+
+        render();
     </script>
 </body>
 </html>
